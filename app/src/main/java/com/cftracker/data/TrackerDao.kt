@@ -17,6 +17,7 @@ abstract class TrackerDao {
         SELECT e.*,
             (SELECT l.weight FROM log_entries l WHERE l.exerciseId = e.id ORDER BY l.timestamp DESC LIMIT 1) AS lastWeight,
             (SELECT l.reps FROM log_entries l WHERE l.exerciseId = e.id ORDER BY l.timestamp DESC LIMIT 1) AS lastReps,
+            (SELECT l.sets FROM log_entries l WHERE l.exerciseId = e.id ORDER BY l.timestamp DESC LIMIT 1) AS lastSets,
             (SELECT MAX(l.timestamp) FROM log_entries l WHERE l.exerciseId = e.id) AS lastTimestamp
         FROM exercises e
         ORDER BY lastTimestamp IS NULL, lastTimestamp DESC, e.name COLLATE NOCASE

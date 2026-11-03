@@ -1,5 +1,6 @@
 package com.cftracker.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Index
@@ -21,20 +22,22 @@ data class Exercise(
 fun Exercise.aliasList(): List<String> =
     aliases.split(',').map { it.trim() }.filter { it.isNotEmpty() }
 
-/** Una serie: peso × repeticiones en un momento dado. */
+/** Un registro: [sets] series iguales de peso × repeticiones (5×5 a 80 kg es un solo registro). */
 @Entity(tableName = "log_entries", indices = [Index("exerciseId")])
 data class LogEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val exerciseId: Long,
     val weight: Double,
     val reps: Int,
+    @ColumnInfo(defaultValue = "1") val sets: Int = 1,
     val timestamp: Long = System.currentTimeMillis(),
 )
 
-/** Ejercicio con su última serie, para la lista de búsqueda. */
+/** Ejercicio con su último registro, para la lista de búsqueda. */
 data class ExerciseSummary(
     @Embedded val exercise: Exercise,
     val lastWeight: Double?,
     val lastReps: Int?,
+    val lastSets: Int?,
     val lastTimestamp: Long?,
 )

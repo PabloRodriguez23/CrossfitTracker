@@ -36,8 +36,8 @@ class SearchViewModel(private val repo: TrackerRepository) : ViewModel() {
         viewModelScope.launch { onCreated(repo.createExercise(name)) }
     }
 
-    fun addEntry(exerciseId: Long, weight: Double, reps: Int) {
-        viewModelScope.launch { repo.addEntry(exerciseId, weight, reps) }
+    fun addEntry(exerciseId: Long, weight: Double, reps: Int, sets: Int) {
+        viewModelScope.launch { repo.addEntry(exerciseId, weight, reps, sets) }
     }
 
     companion object {

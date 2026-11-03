@@ -24,8 +24,8 @@ class TrackerRepository(private val dao: TrackerDao) {
 
     suspend fun deleteExercise(id: Long) = dao.deleteExercise(id)
 
-    suspend fun addEntry(exerciseId: Long, weight: Double, reps: Int) {
-        dao.insertEntry(LogEntry(exerciseId = exerciseId, weight = weight, reps = reps))
+    suspend fun addEntry(exerciseId: Long, weight: Double, reps: Int, sets: Int) {
+        dao.insertEntry(LogEntry(exerciseId = exerciseId, weight = weight, reps = reps, sets = sets))
     }
 
     /** Vuelve a insertar una serie borrada (para "Deshacer"). */

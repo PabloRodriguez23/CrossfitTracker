@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.sp
 import com.cftracker.R
 import com.cftracker.ui.theme.Brand
 import kotlin.math.roundToInt
+import java.time.LocalDate
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -79,6 +80,7 @@ import com.cftracker.util.DaySummary
 import com.cftracker.util.dayLabel
 import com.cftracker.util.fmt
 import com.cftracker.util.groupByDay
+import com.cftracker.util.label
 import com.cftracker.util.parseNumber
 import com.cftracker.util.relativeLabel
 import com.cftracker.util.shortLabel
@@ -133,7 +135,7 @@ fun ExerciseScreen(exerciseId: Long, onBack: () -> Unit) {
                 contentPadding = PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 96.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                item { LastSetCard(ex, entries.firstOrNull()) }
+                item { LastSetCard(ex, entries.firstOrNull(), today = days.firstOrNull()?.takeIf { it.date == LocalDate.now() }) }
                 item {
                     PercentagesCard(
                         exercise = ex,
@@ -170,10 +172,11 @@ fun ExerciseScreen(exerciseId: Long, onBack: () -> Unit) {
                 title = ex.name,
                 initialWeight = last?.weight,
                 initialReps = last?.reps,
+                initialSets = last?.sets,
                 maxWeight = ex.maxWeight.takeIf { ex.showPercentages },
                 onDismiss = { showLog = false },
-                onSave = { weight, reps ->
-                    vm.addEntry(weight, reps)
+                onSave = { weight, reps, sets ->
+                    vm.addEntry(weight, reps, sets)
                     showLog = false
                 },
             )
@@ -206,7 +209,7 @@ fun ExerciseScreen(exerciseId: Long, onBack: () -> Unit) {
 }
 
 @Composable
-private fun LastSetCard(exercise: Exercise, last: LogEntry?) {
+private fun LastSetCard(exercise: Exercise, last: LogEntry?, today: DaySummary?) {
     val soft = Color.White.copy(alpha = 0.8f)
     Box(
         Modifier
@@ -232,7 +235,7 @@ private fun LastSetCard(exercise: Exercise, last: LogEntry?) {
                 Text("Aún no hay series", style = MaterialTheme.typography.titleLarge, color = Color.White)
                 Text("Pulsa «Apuntar serie» para empezar.", style = MaterialTheme.typography.bodyMedium, color = soft)
             } else {
-                Text("ÚLTIMA SERIE", style = MaterialTheme.typography.labelMedium, color = soft)
+                Text("ÚLTIMO REGISTRO", style = MaterialTheme.typography.labelMedium, color = soft)
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
                         last.weight.fmt(),
@@ -240,13 +243,22 @@ private fun LastSetCard(exercise: Exercise, last: LogEntry?) {
                         color = Color.White,
                     )
                     Text(
-                        " kg × ${last.reps}",
+                        if (last.sets > 1) " kg · ${last.sets} × ${last.reps}" else " kg × ${last.reps}",
                         style = MaterialTheme.typography.headlineSmall,
                         color = Color.White,
                         modifier = Modifier.padding(bottom = 6.dp),
                     )
                 }
-                Text(last.timestamp.relativeLabel().replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodyMedium, color = soft)
+                if (today == null) {
+                    Text(last.timestamp.relativeLabel().replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodyMedium, color = soft)
+                } else {
+                    val seriesWord = if (today.totalSets == 1) "serie" else "series"
+                    Text(
+                        "Hoy: ${today.totalSets} $seriesWord · ${today.totalReps} reps · ${today.volume.fmt()} kg",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.White,
+                    )
+                }
                 val max = exercise.maxWeight
                 if (exercise.showPercentages && max != null && max > 0) {
                     Text(
@@ -488,7 +500,7 @@ private fun DayCard(day: DaySummary, onDelete: (LogEntry) -> Unit) {
             }
             day.entries.forEach { entry ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("${entry.weight.fmt()} kg × ${entry.reps}", Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                    Text(entry.label(), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
                     Text(
                         entry.timestamp.timeLabel(),
                         style = MaterialTheme.typography.bodySmall,
@@ -499,10 +511,24 @@ private fun DayCard(day: DaySummary, onDelete: (LogEntry) -> Unit) {
                     }
                 }
             }
+            Row(
+                Modifier
+                    .padding(top = 6.dp, end = 12.dp)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Stat("Series", day.totalSets.toString())
+                Stat("Reps", day.totalReps.toString())
+                Stat("Volumen", "${day.volume.fmt()} kg")
+            }
             Text(
-                "Media ${day.avgWeight.fmt()} kg × ${day.avgReps.fmt()} reps · Volumen ${day.volume.fmt()} kg",
+                "Media ${day.avgWeight.fmt()} kg × ${day.avgReps.fmt()} reps",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 6.dp),
             )
         }
     }

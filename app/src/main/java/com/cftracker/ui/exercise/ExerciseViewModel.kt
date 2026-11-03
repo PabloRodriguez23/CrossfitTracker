@@ -39,8 +39,8 @@ class ExerciseViewModel(
         viewModelScope.launch { repo.rename(exerciseId, name, aliases) }
     }
 
-    fun addEntry(weight: Double, reps: Int) {
-        viewModelScope.launch { repo.addEntry(exerciseId, weight, reps) }
+    fun addEntry(weight: Double, reps: Int, sets: Int) {
+        viewModelScope.launch { repo.addEntry(exerciseId, weight, reps, sets) }
     }
 
     fun deleteEntry(entry: LogEntry) {

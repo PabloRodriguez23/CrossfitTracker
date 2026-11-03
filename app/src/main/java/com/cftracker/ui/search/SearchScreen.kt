@@ -60,6 +60,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -85,10 +86,12 @@ fun SearchScreen(onOpenExercise: (Long) -> Unit) {
     val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    val focusManager = LocalFocusManager.current
 
     val canCreate = query.isNotBlank() && results.none { ExerciseSearch.isExactMatch(query, it.exercise) }
 
     fun open(id: Long) {
+        focusManager.clearFocus()
         vm.updateQuery("")
         onOpenExercise(id)
     }
@@ -213,12 +216,13 @@ fun SearchScreen(onOpenExercise: (Long) -> Unit) {
             title = ex.name,
             initialWeight = target.lastWeight,
             initialReps = target.lastReps,
+            initialSets = target.lastSets,
             maxWeight = ex.maxWeight.takeIf { ex.showPercentages },
             onDismiss = { logTarget = null },
-            onSave = { weight, reps ->
-                vm.addEntry(ex.id, weight, reps)
+            onSave = { weight, reps, sets ->
+                vm.addEntry(ex.id, weight, reps, sets)
                 logTarget = null
-                scope.launch { snackbar.showSnackbar("${ex.name}: ${weight.fmt()} kg × $reps guardado") }
+                scope.launch { snackbar.showSnackbar("${ex.name}: ${if (sets > 1) "$sets × $reps" else "$reps reps"} · ${weight.fmt()} kg guardado") }
             },
         )
     }
@@ -275,7 +279,9 @@ private fun ExerciseRow(summary: ExerciseSummary, onClick: () -> Unit, onQuickLo
                 val time = summary.lastTimestamp
                 Text(
                     if (weight != null && reps != null && time != null) {
-                        "Último: ${weight.fmt()} kg × $reps · ${time.relativeLabel()}"
+                        val sets = summary.lastSets ?: 1
+                        val work = if (sets > 1) "$sets × $reps · ${weight.fmt()} kg" else "${weight.fmt()} kg × $reps"
+                        "Último: $work · ${time.relativeLabel()}"
                     } else {
                         "Sin registros"
                     },

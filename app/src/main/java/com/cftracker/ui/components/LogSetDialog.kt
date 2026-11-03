@@ -41,21 +41,24 @@ fun LogSetDialog(
     title: String,
     initialWeight: Double?,
     initialReps: Int?,
+    initialSets: Int?,
     maxWeight: Double?,
     onDismiss: () -> Unit,
-    onSave: (weight: Double, reps: Int) -> Unit,
+    onSave: (weight: Double, reps: Int, sets: Int) -> Unit,
 ) {
     val initialWeightText = initialWeight?.fmt() ?: ""
     var weightField by remember {
         mutableStateOf(TextFieldValue(initialWeightText, TextRange(0, initialWeightText.length)))
     }
     var repsText by remember { mutableStateOf((initialReps ?: 1).toString()) }
+    var setsText by remember { mutableStateOf((initialSets ?: 1).toString()) }
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     val weight = parseNumber(weightField.text)
     val reps = repsText.toIntOrNull()
-    val valid = weight != null && weight >= 0 && reps != null && reps > 0
+    val sets = setsText.toIntOrNull()
+    val valid = weight != null && weight >= 0 && reps != null && reps > 0 && sets != null && sets > 0
 
     fun setWeight(value: Double) {
         val text = value.coerceAtLeast(0.0).fmt()
@@ -90,10 +93,24 @@ fun LogSetDialog(
                         modifier = it,
                     )
                 }
+                Stepper(
+                    onMinus = { setsText = ((sets ?: 1) - 1).coerceAtLeast(1).toString() },
+                    onPlus = { setsText = ((sets ?: 0) + 1).toString() },
+                ) {
+                    OutlinedTextField(
+                        value = setsText,
+                        onValueChange = { setsText = it.filter(Char::isDigit) },
+                        label = { Text("Series") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = it,
+                    )
+                }
                 if (valid) {
                     val hints = buildList {
                         if (maxWeight != null && maxWeight > 0) add("≈ ${(weight!! / maxWeight * 100).roundToInt()} % de tu RM")
                         if (reps!! > 1) add("RM estimado ${Calc.estimated1Rm(weight!!, reps).fmt()} kg")
+                        if (sets!! > 1) add("${sets * reps} reps en total")
                     }
                     if (hints.isNotEmpty()) {
                         Text(
@@ -106,7 +123,7 @@ fun LogSetDialog(
             }
         },
         confirmButton = {
-            TextButton(enabled = valid, onClick = { onSave(weight!!, reps!!) }) { Text("Guardar") }
+            TextButton(enabled = valid, onClick = { onSave(weight!!, reps!!, sets!!) }) { Text("Guardar") }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Cancelar") }
