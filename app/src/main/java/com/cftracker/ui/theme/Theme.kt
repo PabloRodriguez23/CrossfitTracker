@@ -15,49 +15,49 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 object Brand {
-    val Orange = Color(0xFFFF8A2B)
-    val Pink = Color(0xFFE8336B)
+    val Cyan = Color(0xFF00C2D8)
+    val DeepBlue = Color(0xFF0369A1)
 
     /** Degradado de la marca, el mismo que el fondo del icono. */
-    val gradient: Brush = Brush.linearGradient(listOf(Orange, Pink))
+    val gradient: Brush = Brush.linearGradient(listOf(Cyan, DeepBlue))
 }
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFFFF8A2B),
-    onPrimary = Color(0xFF2A1000),
-    primaryContainer = Color(0xFF4A2210),
-    onPrimaryContainer = Color(0xFFFFDBC8),
-    secondary = Color(0xFFFF6B95),
-    onSecondary = Color(0xFF3B0018),
+    primary = Color(0xFF4DDCEE),
+    onPrimary = Color(0xFF00363D),
+    primaryContainer = Color(0xFF004F58),
+    onPrimaryContainer = Color(0xFFA6EEFF),
+    secondary = Color(0xFF7CC4FF),
+    onSecondary = Color(0xFF00325A),
     tertiary = Color(0xFF6EE7A0),
-    background = Color(0xFF121014),
-    onBackground = Color(0xFFEDE6EE),
-    surface = Color(0xFF121014),
-    onSurface = Color(0xFFEDE6EE),
-    surfaceVariant = Color(0xFF2A2530),
-    onSurfaceVariant = Color(0xFFB4ABB8),
-    surfaceContainerLow = Color(0xFF18151A),
-    surfaceContainer = Color(0xFF1C181F),
-    surfaceContainerHigh = Color(0xFF221E25),
-    surfaceContainerHighest = Color(0xFF29242C),
-    outline = Color(0xFF5A5260),
-    outlineVariant = Color(0xFF38323C),
+    background = Color(0xFF0E1316),
+    onBackground = Color(0xFFE2EBEF),
+    surface = Color(0xFF0E1316),
+    onSurface = Color(0xFFE2EBEF),
+    surfaceVariant = Color(0xFF24303A),
+    onSurfaceVariant = Color(0xFFA8B6BF),
+    surfaceContainerLow = Color(0xFF13191D),
+    surfaceContainer = Color(0xFF171E23),
+    surfaceContainerHigh = Color(0xFF1C242A),
+    surfaceContainerHighest = Color(0xFF222B32),
+    outline = Color(0xFF4E5C66),
+    outlineVariant = Color(0xFF2E3A43),
 )
 
 private val LightColors = lightColorScheme(
-    primary = Color(0xFFD45A00),
+    primary = Color(0xFF00838F),
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFFFDBC8),
-    onPrimaryContainer = Color(0xFF341100),
-    secondary = Color(0xFFC2185B),
+    primaryContainer = Color(0xFFB2EBF2),
+    onPrimaryContainer = Color(0xFF002022),
+    secondary = Color(0xFF0277BD),
     tertiary = Color(0xFF1E8E4F),
-    background = Color(0xFFFFF8F5),
-    surface = Color(0xFFFFF8F5),
-    surfaceVariant = Color(0xFFF3E6E0),
-    surfaceContainerLow = Color(0xFFFFF1EB),
-    surfaceContainer = Color(0xFFFBEBE4),
-    surfaceContainerHigh = Color(0xFFF6E5DE),
-    surfaceContainerHighest = Color(0xFFF0DFD8),
+    background = Color(0xFFF4FBFC),
+    surface = Color(0xFFF4FBFC),
+    surfaceVariant = Color(0xFFDCEBEE),
+    surfaceContainerLow = Color(0xFFEDF7F9),
+    surfaceContainer = Color(0xFFE7F2F5),
+    surfaceContainerHigh = Color(0xFFE1EEF1),
+    surfaceContainerHighest = Color(0xFFDAE9ED),
 )
 
 private val BaseTypography = Typography()
