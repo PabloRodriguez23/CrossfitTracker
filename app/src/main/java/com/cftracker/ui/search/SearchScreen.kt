@@ -2,7 +2,23 @@
 
 package com.cftracker.ui.search
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import com.cftracker.ui.components.AppLogo
+import com.cftracker.ui.components.InitialsAvatar
+import com.cftracker.ui.theme.Brand
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -88,13 +104,36 @@ fun SearchScreen(onOpenExercise: (Long) -> Unit) {
                 .padding(padding)
                 .imePadding()
         ) {
-            OutlinedTextField(
+            Row(
+                Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                AppLogo(size = 44.dp)
+                Spacer(Modifier.width(12.dp))
+                Column {
+                    Text("CF Pesos", style = MaterialTheme.typography.headlineSmall)
+                    Text(
+                        "Busca · apunta · mejora",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
+            TextField(
                 value = query,
                 onValueChange = vm::updateQuery,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
                     .focusRequester(focusRequester),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                ),
                 placeholder = { Text("Buscar ejercicio…") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 trailingIcon = {
@@ -120,8 +159,18 @@ fun SearchScreen(onOpenExercise: (Long) -> Unit) {
 
             LazyColumn(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
+                if (results.isNotEmpty()) {
+                    item(key = "header") {
+                        Text(
+                            if (query.isBlank()) "RECIENTES" else "RESULTADOS",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(start = 4.dp, top = 4.dp),
+                        )
+                    }
+                }
                 items(results, key = { it.exercise.id }) { summary ->
                     ExerciseRow(
                         summary = summary,
@@ -131,23 +180,28 @@ fun SearchScreen(onOpenExercise: (Long) -> Unit) {
                 }
                 if (canCreate) {
                     item(key = "create") {
-                        OutlinedCard(onClick = ::createFromQuery, modifier = Modifier.fillMaxWidth()) {
+                        OutlinedCard(
+                            onClick = ::createFromQuery,
+                            modifier = Modifier.fillMaxWidth(),
+                            border = BorderStroke(1.5.dp, Brand.gradient),
+                        ) {
                             Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Add, contentDescription = null)
+                                Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                                 Spacer(Modifier.width(12.dp))
-                                Text("Crear «${query.trim()}»", style = MaterialTheme.typography.titleMedium)
+                                Column {
+                                    Text("Crear «${query.trim()}»", style = MaterialTheme.typography.titleMedium)
+                                    Text(
+                                        "Nuevo ejercicio",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
                             }
                         }
                     }
                 }
                 if (results.isEmpty() && query.isBlank()) {
-                    item(key = "empty") {
-                        Text(
-                            "Escribe el nombre de un ejercicio para buscarlo o crearlo.",
-                            modifier = Modifier.padding(top = 24.dp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
+                    item(key = "empty") { EmptyState() }
                 }
             }
         }
@@ -171,13 +225,39 @@ fun SearchScreen(onOpenExercise: (Long) -> Unit) {
 }
 
 @Composable
+private fun EmptyState() {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 64.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        AppLogo(size = 88.dp, modifier = Modifier.alpha(0.9f))
+        Text("Tu libreta de pesos", style = MaterialTheme.typography.titleLarge)
+        Text(
+            "Escribe un ejercicio para buscarlo o crearlo.\nLuego pulsa + para apuntar una serie al momento.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Composable
 private fun ExerciseRow(summary: ExerciseSummary, onClick: () -> Unit, onQuickLog: () -> Unit) {
     val ex = summary.exercise
-    Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+    ) {
         Row(
-            Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 8.dp),
+            Modifier.padding(start = 14.dp, top = 14.dp, bottom = 14.dp, end = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            InitialsAvatar(ex.name)
+            Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(ex.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 val aliases = ex.aliasList()
@@ -206,8 +286,15 @@ private fun ExerciseRow(summary: ExerciseSummary, onClick: () -> Unit, onQuickLo
                     Text("RM ${max.fmt()} kg", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                 }
             }
-            FilledTonalIconButton(onClick = onQuickLog) {
-                Icon(Icons.Default.Add, contentDescription = "Apuntar serie")
+            Box(
+                Modifier
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(Brand.gradient)
+                    .clickable(onClick = onQuickLog),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Apuntar serie", tint = Color.White)
             }
         }
     }

@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Barra con discos -->
+<!-- Pesa rusa centrada en la zona segura (66 dp) del icono adaptativo -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:fillColor="#FFFFFF" android:pathData="M24,52h60v4h-60z" />
-    <path android:fillColor="#FFFFFF" android:pathData="M31,36h7v36h-7z" />
-    <path android:fillColor="#FFFFFF" android:pathData="M39,42h5v24h-5z" />
-    <path android:fillColor="#FFFFFF" android:pathData="M70,36h7v36h-7z" />
-    <path android:fillColor="#FFFFFF" android:pathData="M64,42h5v24h-5z" />
+    <group
+        android:scaleX="2.4"
+        android:scaleY="2.4"
+        android:translateX="25.2"
+        android:translateY="25.2">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M10,2.5h4a2.5,2.5 0,0 1,2.5 2.5v4h-2v-3.6a1,1 0,0 0,-1 -1h-3a1,1 0,0 0,-1 1v3.6h-2v-4a2.5,2.5 0,0 1,2.5 -2.5z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M12,8a7.5,7.5 0,0 1,6.7 10.9L17.5,21.5h-11L5.3,18.9A7.5,7.5 0,0 1,12 8z" />
+    </group>
 </vector>

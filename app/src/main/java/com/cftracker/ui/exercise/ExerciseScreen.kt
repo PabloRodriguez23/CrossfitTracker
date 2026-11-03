@@ -2,7 +2,17 @@
 
 package com.cftracker.ui.exercise
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.sp
+import com.cftracker.R
+import com.cftracker.ui.theme.Brand
+import kotlin.math.roundToInt
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -107,6 +117,8 @@ fun ExerciseScreen(exerciseId: Long, onBack: () -> Unit) {
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { showLog = true },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 icon = { Icon(Icons.Default.Add, contentDescription = null) },
                 text = { Text("Apuntar serie") },
             )
@@ -195,32 +207,52 @@ fun ExerciseScreen(exerciseId: Long, onBack: () -> Unit) {
 
 @Composable
 private fun LastSetCard(exercise: Exercise, last: LogEntry?) {
-    Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    val soft = Color.White.copy(alpha = 0.8f)
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .background(Brand.gradient)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_kettlebell),
+            contentDescription = null,
+            tint = Color.White.copy(alpha = 0.12f),
+            modifier = Modifier
+                .size(140.dp)
+                .align(Alignment.CenterEnd)
+                .offset(x = 28.dp),
+        )
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             val aliases = exercise.aliasList()
             if (aliases.isNotEmpty()) {
-                Text(
-                    "También: " + aliases.joinToString(", "),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                Text("También: " + aliases.joinToString(", "), style = MaterialTheme.typography.bodySmall, color = soft)
             }
             if (last == null) {
-                Text("Aún no hay series. Pulsa «Apuntar serie».", style = MaterialTheme.typography.bodyLarge)
+                Text("Aún no hay series", style = MaterialTheme.typography.titleLarge, color = Color.White)
+                Text("Pulsa «Apuntar serie» para empezar.", style = MaterialTheme.typography.bodyMedium, color = soft)
             } else {
-                Text("Último", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("ÚLTIMA SERIE", style = MaterialTheme.typography.labelMedium, color = soft)
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
-                        "${last.weight.fmt()} kg × ${last.reps}",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
+                        last.weight.fmt(),
+                        style = MaterialTheme.typography.headlineLarge.copy(fontSize = 44.sp),
+                        color = Color.White,
                     )
-                    Spacer(Modifier.width(8.dp))
                     Text(
-                        last.timestamp.relativeLabel(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 4.dp),
+                        " kg × ${last.reps}",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = Color.White,
+                        modifier = Modifier.padding(bottom = 6.dp),
+                    )
+                }
+                Text(last.timestamp.relativeLabel().replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodyMedium, color = soft)
+                val max = exercise.maxWeight
+                if (exercise.showPercentages && max != null && max > 0) {
+                    Text(
+                        "${(last.weight / max * 100).roundToInt()} % de tu RM (${max.fmt()} kg)",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.White,
                     )
                 }
             }
@@ -356,18 +388,24 @@ private fun PercentTable(base: Double) {
 
 @Composable
 private fun PercentCell(percent: Int, weight: Double, modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(10.dp),
-        color = if (percent == 100) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+    val highlight = percent == 100
+    val textColor = if (highlight) Color.White else MaterialTheme.colorScheme.onSurface
+    Row(
+        modifier
+            .clip(RoundedCornerShape(12.dp))
+            .then(
+                if (highlight) Modifier.background(Brand.gradient)
+                else Modifier.background(MaterialTheme.colorScheme.surfaceVariant)
+            )
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Row(
-            Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text("$percent %", style = MaterialTheme.typography.bodyMedium)
-            Text("${weight.fmt()} kg", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-        }
+        Text(
+            "$percent %",
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (highlight) textColor else MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text("${weight.fmt()} kg", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = textColor)
     }
 }
 

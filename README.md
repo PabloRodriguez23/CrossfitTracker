@@ -28,9 +28,11 @@ Kotlin · Jetpack Compose (Material 3) · Room · Navigation Compose. `minSdk 26
 2. Deja que sincronice Gradle (descarga Gradle 8.11.1 según `gradle/wrapper/gradle-wrapper.properties`).
 3. Ejecuta la configuración `app` en un emulador o móvil.
 
-> El repo no incluye `gradlew` ni `gradle-wrapper.jar`. Android Studio no los necesita; si quieres
-> compilar desde terminal, genera el wrapper una vez con `gradle wrapper` (o desde el panel Gradle →
-> *Tasks › build setup › wrapper*).
+Desde terminal (necesita JDK 17 y `local.properties` con `sdk.dir`):
+
+```bash
+./gradlew installDebug
+```
 
 ## Estructura
 
