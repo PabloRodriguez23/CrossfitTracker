@@ -2,6 +2,14 @@
 
 App Android para apuntar rápido los pesos de CrossFit, centrada en la búsqueda.
 
+## Por qué
+
+En el box necesitaba algo simple para saber qué peso moví la última vez en cada ejercicio, calcular
+porcentajes del RM sin sacar la calculadora y tener un mínimo de historial para ver si voy mejorando.
+Las apps de entrenamiento que probé eran demasiado completas para eso: rutinas, planes, cuentas…
+Esta va al grano: buscas el ejercicio, apuntas peso, repeticiones y series en un par de toques, y ya.
+Todo se guarda en el móvil, sin cuentas ni conexión.
+
 ## Qué hace
 
 - **Búsqueda primero**: la app abre con el buscador y el teclado listos. Busca por nombre o por
